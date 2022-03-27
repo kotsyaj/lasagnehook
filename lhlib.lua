@@ -64,7 +64,7 @@ do
 			Parent = cre,
 			DisplayOrder = 8888,
 			IgnoreGuiInset = true,
-			Name = "obleus",
+			Name = "lhook",
 			ZIndexBehavior = "Global",
 			ResetOnSpawn = false
 		}})
@@ -77,7 +77,7 @@ do
 			BorderSizePixel = 1,
 			Parent = screen,
 			Position = UDim2.new(0.5, 0, 0.5, 0),
-			Size = UDim2.new(0, 516, 0, 563)
+			Size = UDim2.new(0, 400, 0, 310) -- original values = (0, 516, 0, 563)
 		}})
 		--
 		local frame = utility:Create({Type = "Frame", Properties = {
