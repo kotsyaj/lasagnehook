@@ -823,9 +823,9 @@ do
 	end
 end
 -- // Main
-local window = library:Window({name = "<font color=\"#AA55EB\">elixer.sol</font> | Jul 7 2021"})
+--pplocal window = library:Window({name = "<font color=\"#AA55EB\">elixer.sol</font> | Jul 7 2021"})
 --
-local aimbot = window:Page({Name = "aimbot"})
+--[[local aimbot = window:Page({Name = "aimbot"})
 local antiaim = window:Page({Name = "antiaim"})
 local visuals = window:Page({Name = "visuals"})
 local misc = window:Page({Name = "misc"})
@@ -850,6 +850,6 @@ local button = aimbot_section:Button({Name = "random button", Callback = functio
 local slider = aimbot_section:Slider({Name = "random slider", Callback = function(val) warn(val) end})
 local slider = aimbot_section:Slider({Name = "random slider", Default = 10, Minimum = -10, Maximum = 30, Decimals = 10, Suffix = "%", Callback = function(val) warn(val) end})
 --
-aimbot:Turn(true)
+aimbot:Turn(true)]]
 -- // Returning
 return library, utility, obelus
