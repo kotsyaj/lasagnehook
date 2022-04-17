@@ -10,6 +10,8 @@ GunMesh
 Handle
 --]]
 
+local version = "0.5"
+
 local cg = game:GetService("CoreGui")
 local sg = game:GetService("StarterGui")
 local uis = game:GetService("UserInputService")
@@ -17,6 +19,7 @@ local Characters = game.Workspace:FindFirstChild("Characters")
 local tempent = game.Workspace:FindFirstChild("Entities")
 local entities
 local mineables = game.Workspace:FindFirstChild("Mineables")
+local orbs = game.Workspace:FindFirstChild("Orbs")
 
 local lplr = game:GetService("Players").LocalPlayer
 
@@ -28,18 +31,24 @@ function notify(title, text)
      })
 end
 
+function announce(text)
+    game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(text, "All")
+end
+
 local settings = {
     textesp = true,
+    dotesp = true,
     roleesp = true,
     crateesp = true,
     gunesp = true,
+    orbesp = false,
     announceroles = false,
     announcedeaths = false,
     announcegundrop = false,
     notifyroles = true,
     notifydeaths = true,
     notifygundrop = true,
-    waitbetweenidentification = .85,
+    waitbetweenidentification = .65,
 }
 
 if tempent:FindFirstChild("MapModel") then
@@ -55,7 +64,7 @@ if cg:FindFirstChild("lhook") then cg["lhook"]:Destroy() end
 
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/kotsyaj/lasagnehook/roblox/lhlib.lua"))()
 
-local lasagnehook = library:Window({name = "<font color=\"#AA55EB\">kotsyaj.fun</font> | " .. "TMMX [PUBLIC]"})
+local lasagnehook = library:Window({name = "<font color=\"#AA55EB\">kotsyaj.fun</font> | " .. "TMMX [RELEASE] v" .. version})
 
 local gui = cg:FindFirstChild("lhook")
 script.Parent = gui["Frame"]
@@ -94,6 +103,17 @@ local textesptog = esp_section:Toggle({Name = "Text ESP", Default = true, Callba
     end
 end})
 
+local dotesptog = esp_section:Toggle({Name = "Dot ESP", Default = true, Callback = function(bool)
+    settings.dotesp = bool
+    for _, v in pairs(game:GetDescendants()) do
+        if v:IsA("BillboardGui") and v.Name == "dotesp" and bool == true then
+            v.Enabled = true
+        elseif v:IsA("BillboardGui") and v.Name == "dotesp" and bool == false then
+            v.Enabled = false
+        end
+    end
+end})
+
 local roleesptog = esp_section:Toggle({Name = "Role ESP", Default = true, Callback = function(bool)
     settings.roleesp = bool
     for _, v in pairs(Characters:GetDescendants()) do
@@ -125,6 +145,10 @@ local gunesptog = esp_section:Toggle({Name = "Gun ESP", Default = true, Callback
             v.Transparency = 1
         end
     end
+end})
+
+local orbesptog = esp_section:Toggle({Name = "Orb ESP", Default = false, Callback = function(bool)
+    settings.orbesp = bool
 end})
 
 local misc_section = main:Section({Name = "Misc", side = "Right"})
@@ -194,8 +218,51 @@ local function createTextESP(part, text, color)
     esp_2.TextWrapped = true
 end
 
+local function createDotESP(part, color)
+    local dotesp = Instance.new("BillboardGui", part)
+    local dotesp_2 = Instance.new("Frame")
+    
+    dotesp.Name = "dotesp"
+    dotesp.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    dotesp.Active = true
+    dotesp.AlwaysOnTop = true
+    dotesp.Size = UDim2.new(0, 2, 0, 2)
+    
+    dotesp_2.Name = "dotesp"
+    dotesp_2.Parent = dotesp
+    dotesp_2.BackgroundColor3 = Color3.fromHex(color)
+    dotesp_2.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    dotesp_2.Size = UDim2.new(1, 0, 1, 0)
+end
+
+local mwaiting = false
+local swaiting = false
+
+local function announcedebouncesheriff(text)
+    if mwaiting ~= true then
+        mwaiting = true
+        announce(text)
+        print("waiting")
+        wait(60)
+        print("done")
+        mwaiting = false
+    end
+end
+
+local function announcedebouncemurderer(text)
+    if swaiting ~= true then
+        swaiting = true
+        announce(text)
+        print("waiting")
+        wait(60)
+        print("done")
+        swaiting = false
+    end
+end
+
 -- Main init
 for _, cfplrinit in pairs(Characters:GetChildren()) do
+    if settings.dotesp == true and cfplrinit ~= lplr.Character then createDotESP(cfplrinit:WaitForChild("Head"), "#ffffff") end
     cfplrinit.ChildAdded:connect(function(v)
         if v.Name == "WorldModel" and v:FindFirstChild("Knife") and cfplrinit:FindFirstChild("Humanoid") then
             if not cfplrinit.Head:FindFirstChild("cham") and cfplrinit ~= lplr.Character then
@@ -208,8 +275,10 @@ for _, cfplrinit in pairs(Characters:GetChildren()) do
                     if settings.textesp == true then
                         createTextESP(cfplrinit.Head, "murderer", "#ff0000")
                     end
+                    if settings.announceroles == true then announcedebouncemurderer(cfplrinit.Name .. " is murderer") end
                 else
                     if settings.notifydeaths == true then notify("Death Notif", cfplrinit.Name .. " has died") end
+                    if settings.announcedeaths == true then announce(cfplrinit.Name .. " died to a mysterious flying object (owned!)") end
                 end
             end
         elseif v.Name == "WorldModel" and v:FindFirstChild("Gun") and cfplrinit:FindFirstChild("Humanoid") then
@@ -221,6 +290,7 @@ for _, cfplrinit in pairs(Characters:GetChildren()) do
                 if settings.textesp == true then
                     createTextESP(cfplrinit.Head, "sheriff", "#00ff00")
                 end
+                if settings.announceroles == true then announcedebouncesheriff(cfplrinit.Name .. " has the gun") end
             end
         end
     end)
@@ -230,14 +300,16 @@ end
 wait(1)
 
 -- Loop
-pcall(function()
+--pcall(function()
     Characters.ChildAdded:connect(function(cfplr)
+        if settings.dotesp == true and cfplr ~= lplr.Character then createDotESP(cfplr:WaitForChild("Head"), "#ffffff") end
         cfplr.ChildAdded:connect(function(v)
             if v.Name == "WorldModel" and v:FindFirstChild("Knife") and cfplr:FindFirstChild("Humanoid") then
                 if not cfplr.Head:FindFirstChild("cham") and cfplr ~= lplr.Character then
                     wait(settings.waitbetweenidentification)
                     if cfplr:FindFirstChild("Humanoid") and cfplr:FindFirstChild("Humanoid").Health > 0 then
                         if settings.notifyroles == true then notify("Roles Notif", cfplr.Name .. " is murderer") end
+                        if settings.announceroles == true then announcedebouncemurderer(cfplr.Name .. " is murderer") end
                         if settings.roleesp == true then
                             createBoxHandleAdornment(cfplr.Head, "red")
                         end
@@ -246,6 +318,7 @@ pcall(function()
                         end
                     else
                         if settings.notifydeaths == true then notify("Death Notif", cfplr.Name .. " has died from throwing knife") end
+                        if settings.announcedeaths == true then announce(cfplr.Name .. " died to a mysterious flying object (owned!)") end
                     end
                 end
             elseif v.Name == "WorldModel" and v:FindFirstChild("Gun") and cfplr:FindFirstChild("Humanoid") then
@@ -257,12 +330,25 @@ pcall(function()
                     if settings.textesp == true then
                         createTextESP(cfplr.Head, "sheriff", "#00ff00")
                     end
+                    if settings.announceroles == true then announcedebouncesheriff(cfplr.Name .. " has the gun") end
                 end
             end
         end)
     end)
-end)
+--end)
 -- Loop
+
+-- Orb ESP
+--[[pcall(function()
+    orbs.ChildAdded:connect(function(orb)
+        if settings.orbesp == true then
+            if orb:IsA("BillboardGui") then
+                v.AlwaysOnTop = true
+            end
+        end
+    end)
+end)]]
+-- Orb ESP
 
 -- Crate/Chest ESP
 pcall(function()
@@ -272,10 +358,13 @@ pcall(function()
         elseif settings.crateesp == true and mineable.Name == "CoinChest" then
             createBoxHandleAdornment(mineable:FindFirstChildOfClass("MeshPart"), "white")
         end
-        if settings.textesp == true and mineable.Name == "CoinChest" then
+       --[[ if settings.textesp == true and mineable.Name == "CoinChest" then
             createTextESP(mineable:FindFirstChildOfClass("MeshPart"), "chest", "#ffffff")
         elseif settings.textesp == true and mineable.Name == "CoinBox" then
             createTextESP(mineable:FindFirstChildOfClass("MeshPart"), "crate", "#ffffff")
+        end]]
+        if settings.textesp == true then
+            createTextESP(mineable:FindFirstChildOfClass("MeshPart"), string.lower(mineable.Name), "#ffffff")
         end
     end)
 end)
@@ -284,7 +373,8 @@ end)
 -- Gun ESP
 pcall(function()
 	entities.ChildAdded:Connect(function(gun)
-        if settings.notifygundrop then notify("Gun Notif", "Gun has been dropped") end
+        if settings.notifygundrop == true then notify("Gun Notif", "Gun has been dropped") end
+        if settings.announcegundrop == true then announce("gun dropped") end
         if settings.gunesp == true then
 	        createBoxHandleAdornment(gun:WaitForChild("Handle"), "blue")
         end
