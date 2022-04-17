@@ -1,0 +1,103 @@
+local is = game:GetService("InsertService")
+local players = game:GetService("Players")
+
+--is:LoadLocalAssset()
+
+local anongui = Instance.new("ScreenGui", game:GetService("CoreGui"))
+local main = Instance.new("Frame")
+local previewlabel = Instance.new("ImageLabel")
+local UICorner = Instance.new("UICorner")
+local name = Instance.new("TextBox")
+local disguiser = Instance.new("TextButton")
+local UICorner_2 = Instance.new("UICorner", main)
+
+anongui.Name = "anongui"
+anongui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+main.Name = "main"
+main.Parent = anongui
+main.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+main.Position = UDim2.new(0.0951828286, 0, 0.84446764, 0)
+main.Size = UDim2.new(0, 172, 0, 55)
+
+previewlabel.Name = "previewlabel"
+previewlabel.Parent = main
+previewlabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+previewlabel.BackgroundTransparency = 1.000
+previewlabel.BorderSizePixel = 0
+previewlabel.Position = UDim2.new(0.680232465, 0, 0, 0)
+previewlabel.Size = UDim2.new(0.319767445, 0, 1, 0)
+previewlabel.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
+
+UICorner.CornerRadius = UDim.new(2, 16)
+UICorner.Parent = previewlabel
+
+name.Name = "name"
+name.Parent = main
+name.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+name.BackgroundTransparency = 1.000
+name.Position = UDim2.new(-8.87138896e-08, 0, 0, 0)
+name.Size = UDim2.new(0.680000007, 0, 0.5, 0)
+name.Font = Enum.Font.Code
+name.PlaceholderText = "..."
+name.Text = ""
+name.TextColor3 = Color3.fromRGB(255, 255, 255)
+name.TextSize = 14.000
+
+disguiser.Name = "disguiser"
+disguiser.Parent = main
+disguiser.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+disguiser.BackgroundTransparency = 1.000
+disguiser.Position = UDim2.new(-0, 0, 0.5, 0)
+disguiser.Size = UDim2.new(0.680000007, 0, 0.5, 0)
+disguiser.Font = Enum.Font.Code
+disguiser.Text = "disguise"
+disguiser.TextColor3 = Color3.fromRGB(255, 255, 255)
+disguiser.TextSize = 14.000
+
+-- SHOUTOUT XYLEX / 7GRANDAD [https://github.com/7GrandDadPGN]
+
+local fakeplr = {["Name"] = "", ["UserId"] = ""}
+local lplr = game:GetService("Players").LocalPlayer
+
+name.FocusLost:connect(function()
+    local suc, err = pcall(function()
+        fakeplr["UserId"] = game.Players:GetUserIdFromNameAsync(name.Text)
+    end)
+    if err then warn(err) end
+
+    local suc1, err1 = pcall(function()
+        fakeplr["Name"] = game.Players:GetNameFromUserIdAsync(fakeplr["UserId"])
+    end)
+    if err1 then warn(err1) end
+
+    previewlabel.Image = players:GetUserThumbnailAsync(fakeplr["UserId"], Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
+end)
+
+disguiser.MouseButton1Down:connect(function()
+    local function plrthing(obj, property)
+        obj[property] = obj[property]:gsub(lplr.Name, fakeplr["Name"])
+        obj[property] = obj[property]:gsub(lplr.DisplayName, fakeplr["Name"])
+        obj[property] = obj[property]:gsub(lplr.UserId, fakeplr["UserId"])
+    end
+    
+    local function newobj(v)
+        if v:IsA("TextLabel") or v:IsA("TextButton") then
+            plrthing(v, "Text")
+            v:GetPropertyChangedSignal("Text"):connect(function()
+                plrthing(v, "Text")
+            end)
+        end
+        if v:IsA("ImageLabel") then
+            plrthing(v, "Image")
+            v:GetPropertyChangedSignal("Image"):connect(function()
+                plrthing(v, "Image")
+            end)
+        end
+    end
+    
+    for i,v in pairs(game:GetDescendants()) do
+        newobj(v)
+    end
+    game.DescendantAdded:connect(newobj)
+end)
