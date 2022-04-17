@@ -50,7 +50,7 @@ while wait(2.5) do
         end
     end)
     local isMerchantHere = game:GetService("Workspace")["__THINGS"]["__REMOTES"]["is merchant here"]:InvokeServer({})[1];
-    if isMerchantHere ~= true then timer = timer + 5 invokes = invokes + 1 TextLabel.Text = string.upper(tostring(isMerchantHere) .. " [" .. tostring(timer) .. " secs / " .. string.format("%.2f", timer / 60) .. " mins]" .. " " ..  tostring(invokes) .. " invokes ") else TextLabel.Text = "Merchant Arrived! " end
+    if isMerchantHere ~= true then timer = timer + 2.5 invokes = invokes + 1 TextLabel.Text = string.upper(tostring(isMerchantHere) .. " [" .. tostring(timer) .. " secs / " .. string.format("%.2f", timer / 60) .. " mins]" .. " " ..  tostring(invokes) .. " invokes ") else TextLabel.Text = "Merchant Arrived! " end
    --[[ if (isMerchantHere and not shared.Mute) then
         timer = 0
         invokes = 0
