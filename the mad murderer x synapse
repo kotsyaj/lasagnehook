@@ -1,0 +1,246 @@
+--[[
+MINEABLES CONTENTS: (ClassName = MeshPart)
+RubyCrystal - RUBIES
+CoinSmall --- SMALL PILE
+CoinBox ----- CRATE
+CoinChest --- CHEST
+
+DROPPED GUN: (ClassName = Part)
+GunMesh
+Handle
+--]]
+
+local cg = game:GetService("CoreGui")
+local sg = game:GetService("StarterGui")
+local uis = game:GetService("UserInputService")
+local Characters = game.Workspace:FindFirstChild("Characters")
+local tempent = game.Workspace:FindFirstChild("Entities")
+local entities
+local mineables = game.Workspace:FindFirstChild("Mineables")
+
+local lplr = game:GetService("Players").LocalPlayer
+
+function notify(title, text)
+    sg:SetCore("SendNotification", {
+    	Title = tostring(title);
+    	Text = tostring(text);
+    	Duration = 3;
+     })
+end
+
+local settings = {
+    roleesp = true,
+    crateesp = true,
+    gunesp = true,
+    announceroles = false,
+    announcedeaths = false,
+    announcegundrop = false,
+    notifyroles = true,
+    notifydeaths = true,
+    notifygundrop = true,
+    waitbetweenidentification = 1.5,
+}
+
+if tempent:FindFirstChild("MapModel") then
+    tempent.Name = "Entities2"
+    entities = game.Workspace:FindFirstChild("Entities")
+else
+    entities = tempent
+end
+
+warn("initialziing")
+
+if cg:FindFirstChild("lhook") then cg["lhook"]:Destroy() end
+
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/kotsyaj/lasagnehook/roblox/lhlib.lua"))()
+
+local lasagnehook = library:Window({name = "<font color=\"#AA55EB\">kotsyaj.fun</font> | " .. "the mad murderer x"})
+
+local gui = cg:FindFirstChild("lhook")
+script.Parent = gui["Frame"]
+
+local ui_settings = {
+    toggle_key = Enum.KeyCode.RightShift,
+    toggled = true
+}
+
+uis.InputBegan:Connect(function(input, gameProcessed)
+	if input.KeyCode == (ui_settings.toggle_key  or Enum.KeyCode.RightShift) then
+		if gui then
+			if ui_settings.toggled then
+			    ui_settings.toggled = false
+			    gui:FindFirstChildOfClass("Frame").Visible = false
+			else
+			    ui_settings.toggled = true
+			    gui:FindFirstChildOfClass("Frame").Visible = true
+			end
+		end
+	end
+end)
+
+local main = lasagnehook:Page({Name = "main"})
+
+local esp_section = main:Section({Name = "ESP", side = "Left"})
+
+local roleesptog = esp_section:Toggle({Name = "Role ESP", Default = true, Callback = function(bool)
+    settings.roleesp = bool
+    for _, v in pairs(Characters:GetDescendants()) do
+        if v.Name == "cham" and bool == true then
+            v.Transparency = 0.5
+        elseif v.Name == "cham" and bool == false then
+            v.Transparency = 1
+        end
+    end
+end})
+
+local crateesptog = esp_section:Toggle({Name = "Crate ESP", Default = true, Callback = function(bool)
+    settings.crateesp = bool
+    for _, v in pairs(mineables:GetDescendants()) do
+        if v.Name == "cham" and bool == true then
+            v.Transparency = 0.5
+        elseif v.Name == "cham" and bool == false then
+            v.Transparency = 1
+        end
+    end
+end})
+
+local gunesptog = esp_section:Toggle({Name = "Gun ESP", Default = true, Callback = function(bool)
+    settings.gunesp = bool
+    for _, v in pairs(entities:GetDescendants()) do
+        if v.Name == "cham" and bool == true then
+            v.Transparency = 0.5
+        elseif v.Name == "cham" and bool == false then
+            v.Transparency = 1
+        end
+    end
+end})
+
+local misc_section = main:Section({Name = "Misc", side = "Right"})
+
+local announcerolestog = misc_section:Toggle({Name = "Say Roles", Default = false, Callback = function(bool)
+    settings.announceroles = bool
+end})
+
+local announcedeathstog = misc_section:Toggle({Name = "Say Deaths", Default = false, Callback = function(bool)
+    settings.announcedeaths = bool
+end})
+
+local announceguntog = misc_section:Toggle({Name = "Say Gun Drop", Default = false, Callback = function(bool)
+    settings.announcegundrop = bool
+end})
+
+local rolenotifytog = misc_section:Toggle({Name = "Notify Roles", Default = true, Callback = function(bool)
+    settings.notifyroles = bool
+end})
+
+local deathnotifytog = misc_section:Toggle({Name = "Notify Deaths", Default = true, Callback = function(bool)
+    settings.notifydeaths = bool
+end})
+
+local gunnotifytog = misc_section:Toggle({Name = "Notify Gun Drop", Default = true, Callback = function(bool)
+    settings.notifygundrop = bool
+end})
+
+warn("done!")
+
+local function createBoxHandleAdornment(part, color)
+    local cham = Instance.new("BoxHandleAdornment")
+    cham.Name = "cham"	
+    if color == "white" then cham.Color3 = Color3.new(100 / 255, 100 / 255, 100 / 255) elseif color == "red" then cham.Color3 = Color3.new(100 / 255, 0, 0) elseif color == "green" then cham.Color3 = Color3.new(0, 100 / 255, 0) elseif color == "blue" then cham.Color3 = Color3.new(0, 0, 100 / 255) end
+    cham.Transparency = 0.5
+    cham.ZIndex = 0
+    cham.AlwaysOnTop = true
+    cham.Visible = true
+    cham.Size = part.Size
+    cham.Adornee = part
+    cham.Parent = part
+end
+
+-- Main init
+for _, cfplrinit in pairs(Characters:GetChildren()) do
+    cfplrinit.ChildAdded:connect(function(v)
+        if v.Name == "WorldModel" and v:FindFirstChild("Knife") and cfplrinit:FindFirstChild("Humanoid") then
+            if not cfplrinit.Head:FindFirstChild("cham") and cfplrinit ~= lplr.Character then
+                wait(settings.waitbetweenidentification)
+                if cfplrinit:FindFirstChild("Humanoid") and cfplrinit:FindFirstChild("Humanoid").Health > 0 then
+                    if settings.notifyroles then notify("Roles Notif", cfplrinit.Name .. " is murderer") end
+                    if settings.roleesp then
+                        createBoxHandleAdornment(cfplrinit.Head, "red")
+                    end
+                else
+                    if settings.notifydeaths then notify("Death Notif", cfplrinit.Name .. " has died") end
+                end
+            end
+        elseif v.Name == "WorldModel" and v:FindFirstChild("Gun") and cfplrinit:FindFirstChild("Humanoid") then
+            if not cfplrinit.Head:FindFirstChild("cham") and cfplrinit ~= lplr.Character then
+                if settings.notifyroles then notify("Roles Notif", cfplrinit.Name .. " is sheriff") end
+                if settings.roleesp then
+                    createBoxHandleAdornment(cfplrinit.Head, "green")
+                end
+            end
+        end
+    end)
+end
+-- Main init
+
+wait(1)
+
+-- Loop
+pcall(function()
+    Characters.ChildAdded:connect(function(cfplr)
+        cfplr.ChildAdded:connect(function(v)
+            if v.Name == "WorldModel" and v:FindFirstChild("Knife") and cfplr:FindFirstChild("Humanoid") then
+                if not cfplr.Head:FindFirstChild("cham") and cfplr ~= lplr.Character then
+                    wait(settings.waitbetweenidentification)
+                    if cfplr:FindFirstChild("Humanoid") and cfplr:FindFirstChild("Humanoid").Health > 0 then
+                        if settings.notifyroles then notify("Roles Notif", cfplr.Name .. " is murderer") end
+                        if settings.roleesp then
+                            createBoxHandleAdornment(cfplr.Head, "red")
+                        end
+                    else
+                        if settings.notifydeaths then notify("Death Notif", cfplr.Name .. " has died") end
+                    end
+                end
+            elseif v.Name == "WorldModel" and v:FindFirstChild("Gun") and cfplr:FindFirstChild("Humanoid") then
+                if not cfplr.Head:FindFirstChild("cham") and cfplr ~= lplr.Character then
+                    if settings.notifyroles then notify("Roles Notif", cfplr.Name .. " is sheriff") end
+                    if settings.roleesp then
+                        createBoxHandleAdornment(cfplr.Head, "green")
+                    end
+                end
+            end
+        end)
+    end)
+end)
+-- Loop
+
+-- Crate/Chest ESP
+pcall(function()
+	mineables.ChildAdded:Connect(function(mineable)
+        if settings.crateesp == true and mineable.Name == "CoinBox" then
+	        createBoxHandleAdornment(mineable:FindFirstChildOfClass("MeshPart"), "white")
+        elseif settings.crateesp == true and mineable.Name == "CoinChest" then
+            createBoxHandleAdornment(mineable:FindFirstChildOfClass("MeshPart"), "white")
+        end
+    end)
+end)
+-- Crate/Chest ESP
+
+-- Gun ESP
+pcall(function()
+	entities.ChildAdded:Connect(function(gun)
+        if settings.notifygundrop then notify("Gun Notif", "Gun has been dropped") end
+        if settings.gunesp == true then
+	        createBoxHandleAdornment(gun:WaitForChild("Handle"), "blue")
+        end
+    end)
+end)
+-- Gun ESP
+
+print(":::    ::: :::::::: ::::::::::: ::::::::  :::   :::   :::     :::::::::::")
+print(":+:   :+: :+:    :+:    :+:    :+:    :+: :+:   :+: :+: :+:       :+:    ")
+print("+:+  +:+  +:+    +:+    +:+    +:+         +:+ +:+ +:+   +:+      +:+    ")
+print("+#++:++   +#+    +:+    +#+    +#++:++#++   +#++: +#++:++#++:     +#+    ")
+print("+#+  +#+  +#+    +#+    +#+           +#+    +#+  +#+     +#+     +#+    ")
+print("#+#   #+# #+#    #+#    #+#    #+#    #+#    #+#  #+#     #+# #+# #+#    ")
+print("###    ### ########     ###     ########     ###  ###     ###  #####     ")
