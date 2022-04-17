@@ -5,7 +5,7 @@ local tier3purchase = {
 workspace.__THINGS.__REMOTES["buy merchant item"]:InvokeServer(tier3purchase)
 ]]
 
-local AlertWebhook = "https://webhook.lewistehminerz.dev/api/webhooks/874252905669091409/CXTy0SyMOGrRdCfT4644gVGRoHwQk_XOdLjkpn3rfaGOnfmvxlGrNzrzy8LutxbgYa5u"
+local AlertWebhook = ""
 local assetlink = "http://www.roblox.com/asset/?id="
 local notificationassetid = assetlink .. "2934011598"
 local notification = Instance.new("Sound", workspace)
@@ -38,27 +38,7 @@ game:GetService("Players").LocalPlayer.OnTeleport:Connect(function(State)
     end
 end)
 
-local sent = false
-function sendKickMessage()
-    if sent == false then
-        syn.request({
-                Url = AlertWebhook;
-                Method = "POST";
-                Headers = {
-                    ["content-type"] = "application/json"
-                }; 
-                Body = game:GetService("HttpService"):JSONEncode({
-                ["content"] = ("player was kicked! attempting to rejoin public server")
-            })
-        })
-        sent = true
-    end
-    wait(30)
-    sent = false
-end
-
 -- CHECK IF MERCHANT PRESENT
-local sentdismsg = false
 while wait(2.5) do
     getgenv().Rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:connect(function(kick)
         if kick.Name == "ErrorPrompt" and kick:FindFirstChild("MessageArea") and kick.MessageArea:FindFirstChild("ErrorFrame") then
@@ -67,7 +47,7 @@ while wait(2.5) do
     end)
     local isMerchantHere = game:GetService("Workspace")["__THINGS"]["__REMOTES"]["is merchant here"]:InvokeServer({})[1];
     if isMerchantHere ~= true then timer = timer + 5 invokes = invokes + 1 TextLabel.Text = string.upper(tostring(isMerchantHere) .. " [" .. tostring(timer) .. " secs / " .. string.format("%.2f", timer / 60) .. " mins]" .. " " ..  tostring(invokes) .. " invokes ") else TextLabel.Text = "Merchant Arrived! " end
-    if (isMerchantHere and not shared.Mute) then
+   --[[ if (isMerchantHere and not shared.Mute) then
         timer = 0
         invokes = 0
         shared.Mute = true;
@@ -84,7 +64,7 @@ while wait(2.5) do
                 })
             })
         end)
-    end; 
+    end; --]]
     if isMerchantHere == true then
         repeat
             if retries > maxretries then break end
