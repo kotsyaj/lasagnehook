@@ -32,30 +32,37 @@ TextLabel.TextXAlignment = Enum.TextXAlignment.Right
 TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
 -- GUI
 
+game:GetService("Players").LocalPlayer.OnTeleport:Connect(function(State)
+    if State == Enum.TeleportState.Started then
+        syn.queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/kotsyaj/lasagnehook/roblox/ignore'))()")
+    end
+end)
+
+local sent = false
+function sendKickMessage()
+    if sent == false then
+        syn.request({
+                Url = AlertWebhook;
+                Method = "POST";
+                Headers = {
+                    ["content-type"] = "application/json"
+                }; 
+                Body = game:GetService("HttpService"):JSONEncode({
+                ["content"] = ("player was kicked! attempting to rejoin public server")
+            })
+        })
+        sent = true
+    end
+    wait(30)
+    sent = false
+end
+
 -- CHECK IF MERCHANT PRESENT
 local sentdismsg = false
 while wait(2.5) do
     getgenv().Rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:connect(function(kick)
         if kick.Name == "ErrorPrompt" and kick:FindFirstChild("MessageArea") and kick.MessageArea:FindFirstChild("ErrorFrame") then
-            if sentdismsg == false then
-                syn.request({
-                    Url = AlertWebhook;
-                    Method = "POST";
-                    Headers = {
-                        ["content-type"] = "application/json"
-                    }; 
-                    Body = game:GetService("HttpService"):JSONEncode({
-                        ["content"] = ("player was kicked! attempting to rejoin public server, kick code: " .. tostring(game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ErrorPrompt.MessageArea.ErrorFrame.ErrorMessage.Text))
-                    })
-                })
-            sentdismsg = true
-            end
             game:GetService("TeleportService"):Teleport(game.PlaceId)
-            game:GetService("Players").LocalPlayer.OnTeleport:Connect(function(State)
-                 if State == Enum.TeleportState.Started then
-                    syn.queue_on_teleport("<script to execute after TP>")
-                end
-            end)
         end
     end)
     local isMerchantHere = game:GetService("Workspace")["__THINGS"]["__REMOTES"]["is merchant here"]:InvokeServer({})[1];
