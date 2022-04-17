@@ -29,6 +29,7 @@ function notify(title, text)
 end
 
 local settings = {
+    textesp = true,
     roleesp = true,
     crateesp = true,
     gunesp = true,
@@ -38,7 +39,7 @@ local settings = {
     notifyroles = true,
     notifydeaths = true,
     notifygundrop = true,
-    waitbetweenidentification = 1.5,
+    waitbetweenidentification = .85,
 }
 
 if tempent:FindFirstChild("MapModel") then
@@ -54,7 +55,7 @@ if cg:FindFirstChild("lhook") then cg["lhook"]:Destroy() end
 
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/kotsyaj/lasagnehook/roblox/lhlib.lua"))()
 
-local lasagnehook = library:Window({name = "<font color=\"#AA55EB\">kotsyaj.fun</font> | " .. "the mad murderer x"})
+local lasagnehook = library:Window({name = "<font color=\"#AA55EB\">kotsyaj.fun</font> | " .. "TMMX [PUBLIC]"})
 
 local gui = cg:FindFirstChild("lhook")
 script.Parent = gui["Frame"]
@@ -81,6 +82,17 @@ end)
 local main = lasagnehook:Page({Name = "main"})
 
 local esp_section = main:Section({Name = "ESP", side = "Left"})
+
+local textesptog = esp_section:Toggle({Name = "Text ESP", Default = true, Callback = function(bool)
+    settings.textesp = bool
+    for _, v in pairs(game:GetDescendants()) do
+        if v:IsA("BillboardGui") and v.Name == "textesp" and bool == true then
+            v.Enabled = true
+        elseif v:IsA("BillboardGui") and v.Name == "textesp" and bool == false then
+            v.Enabled = false
+        end
+    end
+end})
 
 local roleesptog = esp_section:Toggle({Name = "Role ESP", Default = true, Callback = function(bool)
     settings.roleesp = bool
@@ -156,6 +168,32 @@ local function createBoxHandleAdornment(part, color)
     cham.Parent = part
 end
 
+local function createTextESP(part, text, color)
+    local esp = Instance.new("BillboardGui")
+    local esp_2 = Instance.new("TextLabel")
+
+    esp.Name = "textesp"
+    esp.Parent = part
+    esp.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    esp.Active = true
+    esp.AlwaysOnTop = true
+    esp.LightInfluence = 1
+    esp.Size = UDim2.new(9, 0, 1, 0)
+    esp.StudsOffset = Vector3.new(0, 1.25, 0)
+    
+    esp_2.Name = "textesp"
+    esp_2.Parent = esp
+    esp_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    esp_2.BackgroundTransparency = 1.000
+    esp_2.Size = UDim2.new(1, 0, 1, 0)
+    esp_2.Font = Enum.Font.Code
+    esp_2.Text = text
+    esp_2.TextColor3 = Color3.fromHex(color)
+    esp_2.TextSize = 12
+    esp_2.TextStrokeTransparency = 0.000
+    esp_2.TextWrapped = true
+end
+
 -- Main init
 for _, cfplrinit in pairs(Characters:GetChildren()) do
     cfplrinit.ChildAdded:connect(function(v)
@@ -163,19 +201,25 @@ for _, cfplrinit in pairs(Characters:GetChildren()) do
             if not cfplrinit.Head:FindFirstChild("cham") and cfplrinit ~= lplr.Character then
                 wait(settings.waitbetweenidentification)
                 if cfplrinit:FindFirstChild("Humanoid") and cfplrinit:FindFirstChild("Humanoid").Health > 0 then
-                    if settings.notifyroles then notify("Roles Notif", cfplrinit.Name .. " is murderer") end
-                    if settings.roleesp then
+                    if settings.notifyroles == true then notify("Roles Notif", cfplrinit.Name .. " is murderer") end
+                    if settings.roleesp == true then
                         createBoxHandleAdornment(cfplrinit.Head, "red")
                     end
+                    if settings.textesp == true then
+                        createTextESP(cfplrinit.Head, "murderer", "#ff0000")
+                    end
                 else
-                    if settings.notifydeaths then notify("Death Notif", cfplrinit.Name .. " has died") end
+                    if settings.notifydeaths == true then notify("Death Notif", cfplrinit.Name .. " has died") end
                 end
             end
         elseif v.Name == "WorldModel" and v:FindFirstChild("Gun") and cfplrinit:FindFirstChild("Humanoid") then
             if not cfplrinit.Head:FindFirstChild("cham") and cfplrinit ~= lplr.Character then
-                if settings.notifyroles then notify("Roles Notif", cfplrinit.Name .. " is sheriff") end
-                if settings.roleesp then
+                if settings.notifyroles == true then notify("Roles Notif", cfplrinit.Name .. " is sheriff") end
+                if settings.roleesp == true then
                     createBoxHandleAdornment(cfplrinit.Head, "green")
+                end
+                if settings.textesp == true then
+                    createTextESP(cfplrinit.Head, "sheriff", "#00ff00")
                 end
             end
         end
@@ -193,19 +237,25 @@ pcall(function()
                 if not cfplr.Head:FindFirstChild("cham") and cfplr ~= lplr.Character then
                     wait(settings.waitbetweenidentification)
                     if cfplr:FindFirstChild("Humanoid") and cfplr:FindFirstChild("Humanoid").Health > 0 then
-                        if settings.notifyroles then notify("Roles Notif", cfplr.Name .. " is murderer") end
-                        if settings.roleesp then
+                        if settings.notifyroles == true then notify("Roles Notif", cfplr.Name .. " is murderer") end
+                        if settings.roleesp == true then
                             createBoxHandleAdornment(cfplr.Head, "red")
                         end
+                        if settings.textesp == true then
+                            createTextESP(cfplr.Head, "murderer", "#ff0000")
+                        end
                     else
-                        if settings.notifydeaths then notify("Death Notif", cfplr.Name .. " has died") end
+                        if settings.notifydeaths == true then notify("Death Notif", cfplr.Name .. " has died from throwing knife") end
                     end
                 end
             elseif v.Name == "WorldModel" and v:FindFirstChild("Gun") and cfplr:FindFirstChild("Humanoid") then
                 if not cfplr.Head:FindFirstChild("cham") and cfplr ~= lplr.Character then
-                    if settings.notifyroles then notify("Roles Notif", cfplr.Name .. " is sheriff") end
-                    if settings.roleesp then
+                    if settings.notifyroles == true then notify("Roles Notif", cfplr.Name .. " is sheriff") end
+                    if settings.roleesp == true then
                         createBoxHandleAdornment(cfplr.Head, "green")
+                    end
+                    if settings.textesp == true then
+                        createTextESP(cfplr.Head, "sheriff", "#00ff00")
                     end
                 end
             end
@@ -222,6 +272,11 @@ pcall(function()
         elseif settings.crateesp == true and mineable.Name == "CoinChest" then
             createBoxHandleAdornment(mineable:FindFirstChildOfClass("MeshPart"), "white")
         end
+        if settings.textesp == true and mineable.Name == "CoinChest" then
+            createTextESP(mineable:FindFirstChildOfClass("MeshPart"), "chest", "#ffffff")
+        elseif settings.textesp == true and mineable.Name == "CoinBox" then
+            createTextESP(mineable:FindFirstChildOfClass("MeshPart"), "crate", "#ffffff")
+        end
     end)
 end)
 -- Crate/Chest ESP
@@ -232,6 +287,9 @@ pcall(function()
         if settings.notifygundrop then notify("Gun Notif", "Gun has been dropped") end
         if settings.gunesp == true then
 	        createBoxHandleAdornment(gun:WaitForChild("Handle"), "blue")
+        end
+        if settings.textesp == true then
+            createTextESP(gun:WaitForChild("Handle"), "gun", "#0000ff")
         end
     end)
 end)
