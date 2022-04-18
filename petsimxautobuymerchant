@@ -1,5 +1,9 @@
 if not syn then warn("synapse not detected! reloading script on kick will not work!") end
 
+while game:isLoaded == false do wait() end
+
+if not game.Players.LocalPlayer.Character then repeat wait() until game.Players.LocalPlayer.Character
+
 warn("autobuy loading")
 
 local AlertWebhook = ""
