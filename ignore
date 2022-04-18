@@ -1,3 +1,5 @@
+if not syn then warn("synapse not detected! reloading script on kick will not work!") end
+
 warn("kotsyaj.fun: loading")
 
 local AlertWebhook = ""
@@ -10,15 +12,12 @@ local invokes = 0
 local maxretries = 7
 local retries = 0
 
--- ANTI AFK
 local vu = game:service("VirtualUser")
 game:service("Players").LocalPlayer.Idled:connect(function()
     print("game attempted to kick")
     vu:CaptureController()vu:ClickButton2(Vector2.new())
 end)
--- ANTI AFK
 
--- GUI
 local ScreenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
 local TextLabel = Instance.new("TextLabel")
 ScreenGui.Name = tostring(math.random(1, 9999999))
@@ -33,7 +32,8 @@ TextLabel.TextSize = 24.000
 TextLabel.TextStrokeTransparency = 0.000
 TextLabel.TextXAlignment = Enum.TextXAlignment.Right
 TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
--- GUI
+
+warn("loaded!")
 
 game:GetService("Players").LocalPlayer.OnTeleport:Connect(function(State)
     if State == Enum.TeleportState.Started then
@@ -41,15 +41,12 @@ game:GetService("Players").LocalPlayer.OnTeleport:Connect(function(State)
     end
 end)
 
--- CHECK IF MERCHANT PRESENT
 while wait(2.5) do
--- REJOIN ON KICK
     getgenv().Rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:connect(function(kick)
         if kick.Name == "ErrorPrompt" and kick:FindFirstChild("MessageArea") and kick.MessageArea:FindFirstChild("ErrorFrame") then
             game:GetService("TeleportService"):Teleport(game.PlaceId)
         end
     end)
--- REJOIN ON KICK
     local isMerchantHere = game:GetService("Workspace")["__THINGS"]["__REMOTES"]["is merchant here"]:InvokeServer({})[1];
     if isMerchantHere ~= true then timer = timer + 5 invokes = invokes + 1 TextLabel.Text = string.upper(tostring(isMerchantHere) .. " [" .. tostring(timer) .. " secs / " .. string.format("%.2f", timer / 60) .. " mins]" .. " " ..  tostring(invokes) .. " invokes ") else TextLabel.Text = "Merchant Arrived! " end
     if isMerchantHere == true then
@@ -68,6 +65,3 @@ while wait(2.5) do
         shared.Mute = false;
     end;
 end
--- CHECK IF MERCHANT PRESENT
-
-warn("loaded!")
