@@ -5,10 +5,10 @@ if not game.Players.LocalPlayer.Character then repeat wait() until game.Players.
 
 warn("autobuy loading")
 
-local assetlink = "http://www.roblox.com/asset/?id="
+--[[local assetlink = "http://www.roblox.com/asset/?id="
 local notificationassetid = assetlink .. "2934011598"
 local notification = Instance.new("Sound", workspace)
-notification.SoundId = notificationassetid
+notification.SoundId = notificationassetid]]
 local timer = 0
 local invokes = 0
 local maxretries = 5
@@ -17,6 +17,18 @@ local retries = 0
 local vu = game:service("VirtualUser")
 game:service("Players").LocalPlayer.Idled:connect(function()
     vu:CaptureController()vu:ClickButton2(Vector2.new())
+end)
+
+game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:connect(function(kick)
+    if kick.Name == "ErrorPrompt" and kick:FindFirstChild("MessageArea") and kick.MessageArea:FindFirstChild("ErrorFrame") then
+        game:GetService("TeleportService"):Teleport(game.PlaceId)
+    end
+end)
+
+game:GetService("Players").LocalPlayer.OnTeleport:Connect(function(State)
+    if State == Enum.TeleportState.Started then
+        syn.queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/kotsyaj/lasagnehook/roblox/petsimxautobuymerchant'))()")
+    end
 end)
 
 local ScreenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
@@ -36,18 +48,7 @@ TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
 
 warn("loaded!")
 
-game:GetService("Players").LocalPlayer.OnTeleport:Connect(function(State)
-    if State == Enum.TeleportState.Started then
-        syn.queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/kotsyaj/lasagnehook/roblox/petsimxautobuymerchant'))()")
-    end
-end)
-
 while wait(2) do
-    getgenv().Rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:connect(function(kick)
-        if kick.Name == "ErrorPrompt" and kick:FindFirstChild("MessageArea") and kick.MessageArea:FindFirstChild("ErrorFrame") then
-            game:GetService("TeleportService"):Teleport(game.PlaceId)
-        end
-    end)
     local isMerchantHere = game:GetService("Workspace")["__THINGS"]["__REMOTES"]["is merchant here"]:InvokeServer({})[1];
     if isMerchantHere ~= true then timer = timer + 2 invokes = invokes + 1 TextLabel.Text = string.upper(tostring(isMerchantHere) .. " [" .. tostring(timer) .. " secs / " .. string.format("%.2f", timer / 60) .. " mins]" .. " " ..  tostring(invokes) .. " invokes ") else TextLabel.Text = "Merchant Arrived! " end
     if isMerchantHere == true and shared.Mute ~= true then
