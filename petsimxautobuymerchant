@@ -41,14 +41,14 @@ game:GetService("Players").LocalPlayer.OnTeleport:Connect(function(State)
     end
 end)
 
-while wait(2.5) do
+while wait(2) do
     getgenv().Rejoin = game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:connect(function(kick)
         if kick.Name == "ErrorPrompt" and kick:FindFirstChild("MessageArea") and kick.MessageArea:FindFirstChild("ErrorFrame") then
             game:GetService("TeleportService"):Teleport(game.PlaceId)
         end
     end)
     local isMerchantHere = game:GetService("Workspace")["__THINGS"]["__REMOTES"]["is merchant here"]:InvokeServer({})[1];
-    if isMerchantHere ~= true then timer = timer + 5 invokes = invokes + 1 TextLabel.Text = string.upper(tostring(isMerchantHere) .. " [" .. tostring(timer) .. " secs / " .. string.format("%.2f", timer / 60) .. " mins]" .. " " ..  tostring(invokes) .. " invokes ") else TextLabel.Text = "Merchant Arrived! " end
+    if isMerchantHere ~= true then timer = timer + 2 invokes = invokes + 1 TextLabel.Text = string.upper(tostring(isMerchantHere) .. " [" .. tostring(timer) .. " secs / " .. string.format("%.2f", timer / 60) .. " mins]" .. " " ..  tostring(invokes) .. " invokes ") else TextLabel.Text = "Merchant Arrived! " end
     if isMerchantHere == true then
         repeat
             if retries > maxretries then break end
