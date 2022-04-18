@@ -1,3 +1,5 @@
+warn("kotsyaj.fun: loading")
+
 local AlertWebhook = ""
 local assetlink = "http://www.roblox.com/asset/?id="
 local notificationassetid = assetlink .. "2934011598"
@@ -9,7 +11,7 @@ local maxretries = 7
 local retries = 0
 
 -- ANTI AFK
-local vu = game:service("Virtualuser")
+local vu = game:service("VirtualUser")
 game:service("Players").LocalPlayer.Idled:connect(function()
     print("game attempted to kick")
     vu:CaptureController()vu:ClickButton2(Vector2.new())
@@ -67,3 +69,5 @@ while wait(2.5) do
     end;
 end
 -- CHECK IF MERCHANT PRESENT
+
+warn("loaded!")
