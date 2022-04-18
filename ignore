@@ -1,6 +1,6 @@
 if not syn then warn("synapse not detected! reloading script on kick will not work!") end
 
-warn("kotsyaj.fun: loading")
+warn("autobuy loading")
 
 local AlertWebhook = ""
 local assetlink = "http://www.roblox.com/asset/?id="
