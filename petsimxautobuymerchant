@@ -61,6 +61,7 @@ while wait(2) do
                 [1] = 3
             }
             workspace.__THINGS.__REMOTES["buy merchant item"]:InvokeServer(tier3purchase)
+            print("bought tier III pet!")
         until retries > maxretries
     end
     if not (isMerchantHere and shared.Mute) then
