@@ -37,7 +37,7 @@ warn("loaded!")
 
 game:GetService("Players").LocalPlayer.OnTeleport:Connect(function(State)
     if State == Enum.TeleportState.Started then
-        syn.queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/kotsyaj/lasagnehook/roblox/ignore'))()")
+        syn.queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/kotsyaj/lasagnehook/roblox/petsimxautobuymerchant'))()")
     end
 end)
 
