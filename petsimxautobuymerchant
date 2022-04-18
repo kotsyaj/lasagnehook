@@ -12,7 +12,7 @@ local notification = Instance.new("Sound", workspace)
 notification.SoundId = notificationassetid
 local timer = 0
 local invokes = 0
-local maxretries = 7
+local maxretries = 5
 local retries = 0
 
 local vu = game:service("VirtualUser")
@@ -52,9 +52,8 @@ while wait(2) do
     end)
     local isMerchantHere = game:GetService("Workspace")["__THINGS"]["__REMOTES"]["is merchant here"]:InvokeServer({})[1];
     if isMerchantHere ~= true then timer = timer + 2 invokes = invokes + 1 TextLabel.Text = string.upper(tostring(isMerchantHere) .. " [" .. tostring(timer) .. " secs / " .. string.format("%.2f", timer / 60) .. " mins]" .. " " ..  tostring(invokes) .. " invokes ") else TextLabel.Text = "Merchant Arrived! " end
-    if isMerchantHere == true then
+    if isMerchantHere == true and shared.Mute ~= true then
         repeat
-            if retries > maxretries then break end
             retries = retries + 1
             wait(0.15)
             local tier3purchase = {
@@ -62,7 +61,11 @@ while wait(2) do
             }
             workspace.__THINGS.__REMOTES["buy merchant item"]:InvokeServer(tier3purchase)
             print("bought tier III pet!")
+            print(retries, maxretries)
+            if retries > maxretries then break end
         until retries > maxretries
+        print("loop done")
+        shared.Mute = true
     end
     if not (isMerchantHere and shared.Mute) then
         retries = 0
