@@ -17,7 +17,6 @@ local retries = 0
 
 local vu = game:service("VirtualUser")
 game:service("Players").LocalPlayer.Idled:connect(function()
-    print("game attempted to kick")
     vu:CaptureController()vu:ClickButton2(Vector2.new())
 end)
 
@@ -60,11 +59,9 @@ while wait(2) do
                 [1] = 3
             }
             workspace.__THINGS.__REMOTES["buy merchant item"]:InvokeServer(tier3purchase)
-            print("bought tier III pet!")
-            print(retries, maxretries)
+            print("attempted to buy tier III pet!")
             if retries > maxretries then break end
         until retries > maxretries
-        print("loop done")
         shared.Mute = true
     end
     if not (isMerchantHere and shared.Mute) then
