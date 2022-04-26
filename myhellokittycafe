@@ -1,0 +1,73 @@
+while game:IsLoaded() == false do wait() end
+if not game.Players.LocalPlayer.Character then repeat wait() until game.Players.LocalPlayer.Character end
+
+game:GetService("Players").LocalPlayer.OnTeleport:Connect(function(State)
+    if State == Enum.TeleportState.Started then
+        syn.queue_on_teleport("loadstring(game:HttpGet('https://raw.githubusercontent.com/kotsyaj/lasagnehook/roblox/myhellokittycafe'))()")
+    end
+end)
+
+if game:GetService("CoreGui"):FindFirstChild("My Hello Kitty Cafe (Venyx UI)") then game:GetService("CoreGui")["My Hello Kitty Cafe (Venyx UI)"]:Destroy() end
+
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/GreenDeno/Venyx-UI-Library/main/source.lua"))()
+local venyx = library.new("My Hello Kitty Cafe (Venyx UI)", 5013109572)
+
+local themes = {
+	Background = Color3.fromRGB(24, 24, 24),
+	Glow = Color3.fromRGB(0, 0, 0),
+	Accent = Color3.fromRGB(10, 10, 10),
+	LightContrast = Color3.fromRGB(20, 20, 20),
+	DarkContrast = Color3.fromRGB(14, 14, 14),  
+	TextColor = Color3.fromRGB(255, 255, 255)
+}
+
+local speedtp = 10
+local afenabled = false
+
+function tp(cords)
+    tweenService, tweenInfo = game:GetService("TweenService"), TweenInfo.new(speedtp/10, Enum.EasingStyle.Linear)
+    local Animation = tweenService:Create(game:GetService("Players")["LocalPlayer"].Character.HumanoidRootPart, tweenInfo, {CFrame = cords})
+    Animation:Play()
+end
+
+local mainpage = venyx:addPage("Main", 5012544693)
+local mainsec = mainpage:addSection("Autofarm")
+
+local function tpToChest(value)
+    if afenabled ~= true then return end
+    if game.Workspace["TreasureEntity"]:FindFirstChildOfClass("Model") then
+        local chest = game.Workspace["TreasureEntity"]:FindFirstChildOfClass("Model"):FindFirstChildOfClass("MeshPart") 
+        tp(chest.CFrame)
+        repeat wait() until (game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position - chest.Position).Magnitude <= 5
+        keypress(0x46)
+        keyrelease(0x46)
+    end
+end
+
+mainsec:addToggle("Treasure Chest Autofarm", false, function(value)
+    afenabled = value
+    repeat if afenabled == false then break end tpToChest() wait(2) until afenabled == false
+end)
+
+mainsec:addSlider("TP Speed", 10, 0, 15, function(value)
+	speedtp = value
+end)
+
+local keybindspg = venyx:addPage("Keybinds", 5012544693)
+local keybindssec = keybindspg:addSection("Keybinds")
+
+keybindssec:addKeybind("Toggle Keybind", Enum.KeyCode.Z, function()
+	venyx:toggle()
+end, function()
+end)
+
+local theme = venyx:addPage("Theme", 5012544693)
+local colors = theme:addSection("Colors")
+
+for theme, color in pairs(themes) do
+	colors:addColorPicker(theme, color, function(color3)
+		venyx:setTheme(theme, color3)
+	end)
+end
+
+venyx:SelectPage(venyx.pages[1], true)
