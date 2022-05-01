@@ -2,6 +2,10 @@ if not syn then warn("synapse not detected! reloading script on kick will not wo
 while game:IsLoaded() == false do wait() end
 if not game.Players.LocalPlayer.Character then repeat wait() until game.Players.LocalPlayer.Character end
 
+local s = {
+    gg = false
+}
+
 local ScreenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
 local TextLabel = Instance.new("TextLabel")
 ScreenGui.Name = tostring(math.random(1, 9999999))
